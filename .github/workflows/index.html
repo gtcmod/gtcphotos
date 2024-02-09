@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Gartic Fotos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Adicionando o favicon -->
+    <link rel="icon" type="image/png" href="https://gartic.com.br/imgs/instagram/avatar.png?v=1">
+    <!-- Estilos CSS -->
+    <style>
+        body {
+            background-color: #666;
+            background-image: url("https://gartic.com.br/imgs/sala/pattern_preto.png");
+            background-repeat: repeat;
+            color: white;
+            font-family: "Arial Black", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Adicionando cores adicionais para o fundo da página */
+        body.blue { background-color: #0081FF; }
+        body.gray { background-color: #666; }
+        body.red { background-color: #D54038; }
+        body.orange { background-color: #FFA006; }
+        body.green { background-color: #388E3C; }
+        body.pink { background-color: #FF4081; }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        input[type="text"] {
+            width: 200px;
+            padding: 5px;
+        }
+
+        .button {
+            padding: 10px;
+            background-color: #ffbb0f;
+            color: #6d3e04;
+            border: 1px solid #e28208;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: "Arial Black", Arial, sans-serif;
+            font-size: 24px;
+        }
+
+        .closeButton {
+            display: none;
+            margin-top: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #ffbb0f;
+            color: #6d3e04;
+            border: 1px solid #e28208;
+            padding: 5px 10px;
+            font-family: "Arial Black", Arial, sans-serif;
+        }
+
+        .error {
+            color: red;
+            margin-top: 5px;
+            font-size: 16px;
+        }
+
+        #photosContainer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #photosContainer img {
+            width: 300px;
+            height: 300px;
+            transition: transform 0.3s ease;
+            border: 2px solid #ffbb0f;
+            cursor: pointer;
+        }
+
+        #photosContainer img:hover {
+            transform: scale(1.1);
+        }
+
+        #imageCaption {
+            color: white;
+            font-family: "Arial Black", Arial, sans-serif;
+            margin-top: 10px;
+            font-size: 20px;
+        }
+
+        #avatar {
+            display: none;
+            width: 300px;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        /* Adicionando estilos para o seletor de cor de fundo */
+        #backgroundColorSelector {
+            margin-top: 10px;
+            font-family: "Arial Black", Arial, sans-serif;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body class="gray">
+    <img src="https://gartic.com.br/imgs/v3/logoHome2x.png" alt="Logo do Gartic">
+    <label for="nickInput">Digite o Nick do Gartic:</label>
+    <br>
+    <input type="text" id="nickInput" placeholder="Insira o nick" onkeydown="handleKeyDown(event)">
+    <br>
+    <button class="button" onclick="showPhotos('Atual')">Veja Atual</button>
+    <button class="button" onclick="showPhotos('Antiga')">Veja Antiga</button>
+    <button class="button" onclick="showPhotos('Antiga2')">Veja Antiga 2</button>
+    <div class="error" id="errorMessage"></div>
+    <div id="photosContainer"></div>
+    <div id="imageCaption"></div>
+    <div class="closeButton" onclick="closeImage()">Fechar imagem</div>
+    <img id="avatar" src="" alt="Avatar">
+
+    <!-- Adicionando um seletor para a cor do fundo -->
+    <label for="backgroundColorSelector">Selecione a cor de fundo:</label>
+    <select id="backgroundColorSelector" onchange="changeBackgroundColor()">
+        <option value="blue">Azul</option>
+        <option value="gray">Cinza</option>
+        <option value="red">Vermelha</option>
+        <option value="orange">Laranja</option>
+        <option value="green">Verde</option>
+        <option value="pink">Rosa</option>
+    </select>
+
+    <script>
+        // Função para trocar a cor de fundo
+        function changeBackgroundColor() {
+            var select = document.getElementById("backgroundColorSelector");
+            var body = document.body;
+
+            // Altera a classe do corpo para a cor selecionada
+            body.className = select.value;
+        }
+
+        function showPhotos(type) {
+            var input = document.getElementById("nickInput");
+            var newNick = input.value;
+            var container = document.getElementById("photosContainer");
+            var caption = document.getElementById("imageCaption");
+            var errorMessage = document.getElementById("errorMessage");
+            var closeButton = document.querySelector(".closeButton");
+
+            if (newNick.trim() !== "") {
+                var url = "";
+                var fileName = newNick + "_" + type; // Defina o nome do arquivo desejado
+                var imgHtml = "";
+
+                if (type === 'Atual') {
+                    url = "https://gartic.com.br/avatar.php?nick=" + encodeURIComponent(newNick);
+                    imgHtml = "<a href='" + url + "' download='" + fileName + "'><img src='" + url + "' alt='Foto do nick'></a>";
+                } else if (type === 'Antiga') {
+                    var nickInicial = newNick.substring(0, 2);
+                    url = `https://gartic.com.br/imgs/mural/${nickInicial}/${newNick}/avatar.png?v=485`;
+                    imgHtml = "<a href='" + url + "' download='" + fileName + "'><img src='" + url + "' alt='Avatar Antigo'></a>";
+                } else if (type === 'Antiga2') {
+                    var nickInicial = newNick.substring(0, 2);
+                    url = `https://gartic.com.br/imgs/mural/${nickInicial}/${newNick}/avatar_mini.png?v=0`;
+                    imgHtml = "<a href='" + url + "' download='" + fileName + "'><img src='" + url + "' alt='Avatar Antigo 2'></a>";
+                }
+
+                container.innerHTML = imgHtml;
+                caption.textContent = "Clique na imagem para baixar!";
+                closeButton.style.display = "block";
+                errorMessage.textContent = "";
+            } else {
+                container.innerHTML = "";
+                caption.textContent = "";
+                closeButton.style.display = "none";
+                errorMessage.textContent = "Digite o nick da conta corretamente. Qualquer erro não irá mostrá-lo.";
+                errorMessage.style.color = "red";
+            }
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === "Enter") {
+                showPhotos('Atual'); // Ou substitua pelo tipo desejado (Atual, Antiga, Antiga2)
+            }
+        }
+
+        function closeImage() {
+            var container = document.getElementById("photosContainer");
+            var caption = document.getElementById("imageCaption");
+            var closeButton = document.querySelector(".closeButton");
+            var errorMessage = document.getElementById("errorMessage");
+            var avatarImage = document.getElementById("avatar");
+
+            container.innerHTML = "";
+            caption.textContent = "";
+            closeButton.style.display = "none";
+            errorMessage.textContent = "";
+            avatarImage.style.display = "none";
+        }
+    </script>
+</body>
+
+</html>
